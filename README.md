@@ -23,3 +23,10 @@ When you read a raw HTTP response, `Set-Cookie` is awkward: there can be several
 ## The awkward edge
 
 Each string passed in is one cookie. If you have a single string that concatenates multiple `Set-Cookie` headers with `", "`, this library will not split it for you — `Expires` values contain commas, so any automatic comma-join or comma-split is wrong by construction. Split into separate strings upstream (any real HTTP client gives you a list of header values already), then pass that list here.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
